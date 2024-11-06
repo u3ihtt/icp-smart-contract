@@ -8,6 +8,7 @@
     "MedooID": "npx hardhat run scripts/medoo-nft/deployMedooID.ts --network",
     "MedooNFT": "npx hardhat run scripts/medoo-nft/deployMedooNFT.ts --network",
     "MedooSyllabusNFT": "npx hardhat run scripts/medoo-nft/deployMedooSyllabusNFT.ts --network",
-    "MedooLearningMaterial": "npx hardhat run scripts/courses/deployMedooLearningMaterial.ts --network"
+    "MedooLearningMaterial": "npx hardhat run scripts/courses/deployMedooLearningMaterial.ts --network",
+    "MedooCourseUser": "npx hardhat run scripts/courses/deployMedooCourseUser.ts --network"
   }
 }

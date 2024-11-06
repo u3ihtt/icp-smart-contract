@@ -7,7 +7,6 @@ async function main() {
   const MedooCourseNFTFactory =
     await ethers.getContractFactory("MedooCourseNFT");
   const medooCourseNFT = await MedooCourseNFTFactory.deploy();
-  console.log("3");
   await medooCourseNFT.waitForDeployment();
   const medooCourseNFTAddress = await medooCourseNFT.getAddress();
   console.log(
@@ -19,7 +18,6 @@ async function main() {
     "MedooProxyAdmin",
     network.name,
   );
-  console.log("5");
 
   const MedooCourseNFTProxy = await ethers.getContractFactory(
     "MedooCourseNFTProxy",
@@ -27,7 +25,6 @@ async function main() {
   const medooCourseNFTInterface = new Interface([
     "function initialize(address) public",
   ]);
-  console.log("7");
 
   const adminMinterAddress = process.env.ADMIN_MINTER_ADDRESS || "";
 
@@ -36,13 +33,11 @@ async function main() {
     [adminMinterAddress],
   );
 
-  console.log("9");
   const medooCourseNFTProxy = await MedooCourseNFTProxy.deploy(
-    "0x3a9411d0D82e98C86741Ab80C90BA8D64944779D",
+    medooCourseNFTAddress,
     medooProxyAdminAddress,
     initializeData,
   );
-  console.log("11");
 
   await medooCourseNFTProxy.waitForDeployment();
   const medooCourseNFTProxyAddress = await medooCourseNFTProxy.getAddress();

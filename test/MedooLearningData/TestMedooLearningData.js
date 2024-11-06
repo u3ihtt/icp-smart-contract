@@ -18,15 +18,14 @@ const deployFnc = async () => {
   await medooForwarder.waitForDeployment();
   const medooForwarderAddress = await medooForwarder.getAddress();
 
-  const MedooLearningData = await ethers.getContractFactory(
-    "MedooLearningData"
-  );
+  const MedooLearningData =
+    await ethers.getContractFactory("MedooLearningData");
   const medooLearningData = await MedooLearningData.deploy();
   await medooLearningData.waitForDeployment();
   const medooLearningDataAddress = await medooLearningData.getAddress();
 
   const MedooLearningDataProxy = await ethers.getContractFactory(
-    "MedooLearningDataProxy"
+    "MedooLearningDataProxy",
   );
 
   const medooLearningDataInterface = new Interface([
@@ -34,13 +33,13 @@ const deployFnc = async () => {
   ]);
   const initializeData = medooLearningDataInterface.encodeFunctionData(
     "initialize",
-    [medooForwarderAddress, admin.address]
+    [medooForwarderAddress, admin.address],
   );
 
   const medooLearningDataProxy = await MedooLearningDataProxy.deploy(
     medooLearningDataAddress,
     medooProxyAdminAddress,
-    initializeData
+    initializeData,
   );
 
   await medooLearningDataProxy.waitForDeployment();
@@ -59,7 +58,7 @@ const deployFnc = async () => {
   };
 };
 
-describe("MedooLearningDataProxy Token", function () {
+describe("MedooLearningDataProxy Token", () => {
   let medooLearningData,
     medooLearningDataProxy,
     medooProxyAdmin,
@@ -75,7 +74,7 @@ describe("MedooLearningDataProxy Token", function () {
     { name: "data", type: "bytes" },
   ];
 
-  before(async function () {
+  before(async () => {
     ({
       medooForwarder,
       medooLearningData,
@@ -88,61 +87,60 @@ describe("MedooLearningDataProxy Token", function () {
     } = await loadFixture(deployFnc));
   });
 
-  describe("MedooLearningDataProxy function test", function () {
-    describe("MedooLearningData Contract", function () {
-      it("Should revert to call direct function from this medooLearningData contract", async function () {
-        const { medooLearningData, owner, admin } = await loadFixture(
-          deployFnc
-        );
+  describe("MedooLearningDataProxy function test", () => {
+    describe("MedooLearningData Contract", () => {
+      it("Should revert to call direct function from this medooLearningData contract", async () => {
+        const { medooLearningData, owner, admin } =
+          await loadFixture(deployFnc);
         await expect(medooLearningData.initialize(owner, admin)).to.be.reverted;
       });
     });
 
-    describe("MedooLearningData Proxy Admin Contract", function () {
-      it("Should the right owner of proxy contract", async function () {
+    describe("MedooLearningData Proxy Admin Contract", () => {
+      it("Should the right owner of proxy contract", async () => {
         const proxyAddress = await medooProxyAdmin.getProxyAdmin(
-          medooLearningDataProxy.target
+          medooLearningDataProxy.target,
         );
         expect(proxyAddress).to.be.equal(medooProxyAdmin.target);
       });
 
-      it("Should the right Proxy Implementation address", async function () {
+      it("Should the right Proxy Implementation address", async () => {
         const implementationAddress =
           await medooProxyAdmin.getProxyImplementation(
-            medooLearningDataProxy.target
+            medooLearningDataProxy.target,
           );
         expect(implementationAddress).to.be.equal(medooLearningData.target);
       });
-      it("Should the right deployer address", async function () {
+      it("Should the right deployer address", async () => {
         const deployer = await medooProxyAdmin.owner();
         expect(deployer).to.be.equal(owner);
       });
     });
 
-    describe("MedooLearningData Proxy Contract", function () {
-      it("recognize trusted forwarder", async function () {
-        const MedooLearningData = await ethers.getContractFactory(
-          "MedooLearningData"
-        );
+    describe("MedooLearningData Proxy Contract", () => {
+      it("recognize trusted forwarder", async () => {
+        const MedooLearningData =
+          await ethers.getContractFactory("MedooLearningData");
         medooLearningDataProxy = MedooLearningData.attach(
-          medooLearningDataProxy.target
+          medooLearningDataProxy.target,
         );
 
         expect(
-          await medooLearningDataProxy.isTrustedForwarder(medooForwarder.target)
+          await medooLearningDataProxy.isTrustedForwarder(
+            medooForwarder.target,
+          ),
         ).to.be.true;
 
         expect(await medooLearningDataProxy.trustedForwarder()).to.equal(
-          medooForwarder.target
+          medooForwarder.target,
         );
       });
 
-      it("should work when store buy course transaction", async function () {
-        const MedooLearningData = await ethers.getContractFactory(
-          "MedooLearningData"
-        );
+      it("should work when store buy course transaction", async () => {
+        const MedooLearningData =
+          await ethers.getContractFactory("MedooLearningData");
         medooLearningDataProxy = MedooLearningData.attach(
-          medooLearningDataProxy.target
+          medooLearningDataProxy.target,
         );
 
         const buyCourseTransaction = {
@@ -162,7 +160,7 @@ describe("MedooLearningDataProxy Token", function () {
         await expect(
           medooLearningDataProxy
             .connect(admin)
-            .storeBuyCourseTransaction(buyCourseTransaction)
+            .storeBuyCourseTransaction(buyCourseTransaction),
         ).to.emit(medooLearningDataProxy, "BuyCourseTransactionLogged");
         //   .withArgs([
         //     10n,
@@ -182,12 +180,11 @@ describe("MedooLearningDataProxy Token", function () {
         // console.log(await medooLearningDataProxy.getBuyCourseTransactions(10));
       });
 
-      it("should work when get buy course transactions", async function () {
-        const MedooLearningData = await ethers.getContractFactory(
-          "MedooLearningData"
-        );
+      it("should work when get buy course transactions", async () => {
+        const MedooLearningData =
+          await ethers.getContractFactory("MedooLearningData");
         medooLearningDataProxy = MedooLearningData.attach(
-          medooLearningDataProxy.target
+          medooLearningDataProxy.target,
         );
 
         const buyCourseTransaction = {
@@ -207,7 +204,7 @@ describe("MedooLearningDataProxy Token", function () {
         await expect(
           medooLearningDataProxy
             .connect(admin)
-            .storeBuyCourseTransaction(buyCourseTransaction)
+            .storeBuyCourseTransaction(buyCourseTransaction),
         ).to.emit(medooLearningDataProxy, "BuyCourseTransactionLogged");
         //   .withArgs([
         //     10n,
@@ -227,12 +224,11 @@ describe("MedooLearningDataProxy Token", function () {
         console.log(await medooLearningDataProxy.getBuyCourseTransactions(10));
       });
 
-      it("should work when store learning progress", async function () {
-        const MedooLearningData = await ethers.getContractFactory(
-          "MedooLearningData"
-        );
+      it("should work when store learning progress", async () => {
+        const MedooLearningData =
+          await ethers.getContractFactory("MedooLearningData");
         medooLearningDataProxy = MedooLearningData.attach(
-          medooLearningDataProxy.target
+          medooLearningDataProxy.target,
         );
 
         const learningProgress = {
@@ -246,7 +242,7 @@ describe("MedooLearningDataProxy Token", function () {
         const nonce = await medooForwarder.getNonce(user1.address);
         const data = medooLearningDataProxy.interface.encodeFunctionData(
           "storeLearningProgress",
-          args
+          args,
         );
         const req = {
           from: await user1.address,
@@ -266,7 +262,7 @@ describe("MedooLearningDataProxy Token", function () {
             verifyingContract: domain[4],
           },
           { ForwardRequest: ForwardRequest },
-          req
+          req,
         );
         expect(await medooForwarder.verify(req, signature)).to.be.true;
 
@@ -277,7 +273,7 @@ describe("MedooLearningDataProxy Token", function () {
         // console.log("estimate gas: ", estimate);
 
         expect(
-          await medooForwarder.connect(user2).executeWithRevert(req, signature)
+          await medooForwarder.connect(user2).executeWithRevert(req, signature),
         )
           .to.emit(medooLearningDataProxy, "LearningProgressLogged")
           .withArgs([10n, 11n, 12n, anyValue]);
